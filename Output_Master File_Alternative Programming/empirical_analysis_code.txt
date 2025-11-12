@@ -1,0 +1,357 @@
+Here's a comprehensive Python script to conduct the empirical analysis as requested:
+
+```python
+import pandas as pd
+import numpy as np
+import os
+import json
+from pathlib import Path
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
+import statsmodels.api as sm
+from statsmodels.formula.api import ols
+from linearmodels.panel import PanelOLS
+import warnings
+warnings.filterwarnings('ignore')
+
+def generate_time_trend(df):
+    """
+    Generate a time trend variable based on FYEAR
+    """
+    df = df.copy()
+    min_year = df['FYEAR'].min()
+    df['time_trend'] = df['FYEAR'] - min_year
+    return df
+
+def filter_data_around_regulation(df, window=2):
+    """
+    Filter data to ±2 years around regulation year
+    Assumes regulation year is stored in 'Year' column
+    """
+    df = df.copy()
+    
+    # If 'Year' contains the regulation year for each observation
+    if 'Year' in df.columns:
+        df = df[(df['FYEAR'] >= df['Year'] - window) & 
+                (df['FYEAR'] <= df['Year'] + window)]
+    
+    return df
+
+def run_regression_specifications(df):
+    """
+    Run three regression specifications with clustered standard errors
+    """
+    results = {}
+    
+    # Ensure we have the required columns
+    required_cols = ['freqMF', 'treatment_effect', 'GVKEY', 'FYEAR']
+    control_vars = ['linstown', 'lsize', 'lbtm', 'lroa', 'lsaret12', 
+                   'levol', 'lloss', 'lcalrisk', 'time_trend']
+    
+    # Check if all required columns exist
+    missing_cols = [col for col in required_cols + control_vars if col not in df.columns]
+    if missing_cols:
+        print(f"Warning: Missing columns: {missing_cols}")
+    
+    # Remove rows with missing values in key variables
+    key_vars = ['freqMF', 'treatment_effect', 'GVKEY', 'FYEAR']
+    df_clean = df.dropna(subset=key_vars)
+    
+    if len(df_clean) == 0:
+        print("No valid observations after cleaning")
+        return results
+    
+    try:
+        # Specification 1: Baseline OLS (univariate)
+        formula1 = 'freqMF ~ treatment_effect'
+        model1 = ols(formula1, data=df_clean).fit(cov_type='cluster', 
+                                                  cov_kwds={'groups': df_clean['GVKEY']})
+        
+        results['spec1_baseline'] = {
+            'formula': formula1,
+            'n_obs': int(model1.nobs),
+            'r_squared': float(model1.rsquared),
+            'coefficients': {},
+            't_stats': {},
+            'p_values': {},
+            'std_errors': {}
+        }
+        
+        for var in model1.params.index:
+            results['spec1_baseline']['coefficients'][var] = float(model1.params[var])
+            results['spec1_baseline']['t_stats'][var] = float(model1.tvalues[var])
+            results['spec1_baseline']['p_values'][var] = float(model1.pvalues[var])
+            results['spec1_baseline']['std_errors'][var] = float(model1.bse[var])
+    
+    except Exception as e:
+        print(f"Error in Specification 1: {e}")
+        results['spec1_baseline'] = {'error': str(e)}
+    
+    try:
+        # Specification 2: OLS with control variables
+        available_controls = [var for var in control_vars if var in df_clean.columns]
+        control_formula = ' + '.join(available_controls)
+        formula2 = f'freqMF ~ treatment_effect + {control_formula}'
+        
+        # Remove rows with missing control variables
+        all_vars = ['freqMF', 'treatment_effect'] + available_controls
+        df_spec2 = df_clean.dropna(subset=all_vars)
+        
+        if len(df_spec2) > 0:
+            model2 = ols(formula2, data=df_spec2).fit(cov_type='cluster', 
+                                                      cov_kwds={'groups': df_spec2['GVKEY']})
+            
+            results['spec2_controls'] = {
+                'formula': formula2,
+                'n_obs': int(model2.nobs),
+                'r_squared': float(model2.rsquared),
+                'coefficients': {},
+                't_stats': {},
+                'p_values': {},
+                'std_errors': {}
+            }
+            
+            for var in model2.params.index:
+                results['spec2_controls']['coefficients'][var] = float(model2.params[var])
+                results['spec2_controls']['t_stats'][var] = float(model2.tvalues[var])
+                results['spec2_controls']['p_values'][var] = float(model2.pvalues[var])
+                results['spec2_controls']['std_errors'][var] = float(model2.bse[var])
+        else:
+            results['spec2_controls'] = {'error': 'No observations after removing missing values'}
+    
+    except Exception as e:
+        print(f"Error in Specification 2: {e}")
+        results['spec2_controls'] = {'error': str(e)}
+    
+    try:
+        # Specification 3: Panel regression with firm fixed effects
+        available_controls = [var for var in control_vars if var in df_clean.columns]
+        all_vars = ['freqMF', 'treatment_effect'] + available_controls + ['GVKEY', 'FYEAR']
+        df_spec3 = df_clean.dropna(subset=all_vars)
+        
+        if len(df_spec3) > 0:
+            # Set up panel data
+            df_spec3 = df_spec3.set_index(['GVKEY', 'FYEAR'])
+            
+            # Prepare variables for panel regression
+            y = df_spec3['freqMF']
+            X_vars = ['treatment_effect'] + available_controls
+            X = df_spec3[X_vars]
+            
+            # Run panel regression with entity fixed effects
+            model3 = PanelOLS(y, X, entity_effects=True).fit(cov_type='clustered', 
+                                                              cluster_entity=True)
+            
+            results['spec3_fixed_effects'] = {
+                'n_obs': int(model3.nobs),
+                'r_squared': float(model3.rsquared),
+                'coefficients': {},
+                't_stats': {},
+                'p_values': {},
+                'std_errors': {}
+            }
+            
+            for var in model3.params.index:
+                results['spec3_fixed_effects']['coefficients'][var] = float(model3.params[var])
+                results['spec3_fixed_effects']['t_stats'][var] = float(model3.tstats[var])
+                results['spec3_fixed_effects']['p_values'][var] = float(model3.pvalues[var])
+                results['spec3_fixed_effects']['std_errors'][var] = float(model3.std_errors[var])
+        else:
+            results['spec3_fixed_effects'] = {'error': 'No observations after removing missing values'}
+    
+    except Exception as e:
+        print(f"Error in Specification 3: {e}")
+        results['spec3_fixed_effects'] = {'error': str(e)}
+    
+    return results
+
+def create_results_table_pdf(all_results, output_path):
+    """
+    Create a PDF with regression results tables
+    """
+    with PdfPages(output_path) as pdf:
+        for file_name, results in all_results.items():
+            fig, ax = plt.subplots(figsize=(12, 8))
+            ax.axis('tight')
+            ax.axis('off')
+            
+            # Create table data
+            table_data = []
+            headers = ['Variable', 'Spec 1: Baseline', 'Spec 2: Controls', 'Spec 3: Fixed Effects']
+            table_data.append(headers)
+            
+            # Get all variables across specifications
+            all_vars = set()
+            for spec_name in ['spec1_baseline', 'spec2_controls', 'spec3_fixed_effects']:
+                if spec_name in results and 'coefficients' in results[spec_name]:
+                    all_vars.update(results[spec_name]['coefficients'].keys())
+            
+            # Add coefficient and t-stat rows for each variable
+            for var in sorted(all_vars):
+                if var == 'Intercept':
+                    continue
+                    
+                coef_row = [var]
+                tstat_row = ['']
+                
+                for spec_name in ['spec1_baseline', 'spec2_controls', 'spec3_fixed_effects']:
+                    if (spec_name in results and 
+                        'coefficients' in results[spec_name] and 
+                        var in results[spec_name]['coefficients']):
+                        
+                        coef = results[spec_name]['coefficients'][var]
+                        tstat = results[spec_name]['t_stats'][var]
+                        pval = results[spec_name]['p_values'][var]
+                        
+                        # Add significance stars
+                        stars = ''
+                        if pval < 0.01:
+                            stars = '***'
+                        elif pval < 0.05:
+                            stars = '**'
+                        elif pval < 0.10:
+                            stars = '*'
+                        
+                        coef_row.append(f'{coef:.4f}{stars}')
+                        tstat_row.append(f'({tstat:.2f})')
+                    else:
+                        coef_row.append('')
+                        tstat_row.append('')
+                
+                table_data.append(coef_row)
+                table_data.append(tstat_row)
+            
+            # Add summary statistics
+            table_data.append([''])
+            obs_row = ['Observations']
+            r2_row = ['R-squared']
+            
+            for spec_name in ['spec1_baseline', 'spec2_controls', 'spec3_fixed_effects']:
+                if spec_name in results and 'n_obs' in results[spec_name]:
+                    obs_row.append(str(results[spec_name]['n_obs']))
+                    r2_row.append(f"{results[spec_name]['r_squared']:.4f}")
+                else:
+                    obs_row.append('')
+                    r2_row.append('')
+            
+            table_data.append(obs_row)
+            table_data.append(r2_row)
+            
+            # Create table
+            table = ax.table(cellText=table_data, cellLoc='center', loc='center')
+            table.auto_set_font_size(False)
+            table.set_fontsize(8)
+            table.scale(1.2, 1.5)
+            
+            # Style the table
+            for i in range(len(headers)):
+                table[(0, i)].set_facecolor('#40466e')
+                table[(0, i)].set_text_props(weight='bold', color='white')
+            
+            plt.title(f'Regression Results: {file_name}', fontsize=14, fontweight='bold', pad=20)
+            pdf.savefig(fig, bbox_inches='tight')
+            plt.close()
+
+def main():
+    # Set directory path containing CSV files
+    data_directory = input("Enter the directory path containing CSV files: ").strip()
+    if not data_directory:
+        data_directory = "."  # Current directory if no input
+    
+    # Output directory
+    output_dir = "regression_results"
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Dictionary to store all results
+    all_results = {}
+    
+    # Process all CSV files in the directory
+    csv_files = list(Path(data_directory).glob("*.csv"))
+    
+    if not csv_files:
+        print(f"No CSV files found in {data_directory}")
+        return
+    
+    print(f"Found {len(csv_files)} CSV files to process")
+    
+    for csv_file in csv_files:
+        print(f"\nProcessing: {csv_file.name}")
+        
+        try:
+            # Read the data
+            df = pd.read_csv(csv_file)
+            print(f"Loaded {len(df)} observations")
+            
+            # Generate time trend variable
+            df = generate_time_trend(df)
+            
+            # Filter data to ±2 years around regulation year
+            df_filtered = filter_data_around_regulation(df, window=2)
+            print(f"After filtering: {len(df_filtered)} observations")
+            
+            if len(df_filtered) == 0:
+                print("No observations after filtering")
+                continue
+            
+            # Run regression specifications
+            results = run_regression_specifications(df_filtered)
+            
+            # Store results
+            all_results[csv_file.stem] = results
+            
+            print(f"Completed analysis for {csv_file.name}")
+            
+        except Exception as e:
+            print(f"Error processing {csv_file.name}: {e}")
+            all_results[csv_file.stem] = {'error': str(e)}
+    
+    # Save results as JSON
+    json_output = os.path.join(output_dir, "regression_results.json")
+    with open(json_output, 'w') as f:
+        json.dump(all_results, f, indent=2)
+    print(f"\nResults saved to: {json_output}")
+    
+    # Create PDF with results tables
+    pdf_output = os.path.join(output_dir, "regression_results.pdf")
+    create_results_table_pdf(all_results, pdf_output)
+    print(f"PDF report saved to: {pdf_output}")
+    
+    # Print summary
+    print(f"\nSummary:")
+    print(f"- Processed {len(csv_files)} files")
+    print(f"- Successful analyses: {len([r for r in all_results.values() if 'error' not in r])}")
+    print(f"- Results saved in: {output_dir}/")
+
+if __name__ == "__main__":
+    main()
+```
+
+This script provides a comprehensive solution for your empirical analysis needs:
+
+## Key Features:
+
+1. **Time Trend Generation**: Creates a time trend variable based on FYEAR
+2. **Data Filtering**: Filters data to ±2 years around the regulation year
+3. **Three Regression Specifications**:
+   - Baseline univariate OLS
+   - OLS with control variables
+   - Panel regression with firm fixed effects
+4. **Clustered Standard Errors**: All regressions use firm-level clustering
+5. **Batch Processing**: Processes all CSV files in a directory
+6. **Comprehensive Output**: Saves results as both JSON and PDF
+
+## Required Libraries:
+```bash
+pip install pandas numpy matplotlib statsmodels linearmodels pathlib
+```
+
+## Usage:
+1. Run the script
+2. Enter the directory path containing your CSV files
+3. The script will process all CSV files and save results in a `regression_results` folder
+
+## Output:
+- **JSON file**: Contains detailed regression results with coefficients, t-stats, p-values, and standard errors
+- **PDF file**: Professional-looking tables with regression results, including significance stars
+
+The script handles missing data gracefully and provides error reporting for any issues encountered during processing.
