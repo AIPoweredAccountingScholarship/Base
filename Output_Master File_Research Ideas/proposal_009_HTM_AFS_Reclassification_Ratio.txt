@@ -1,0 +1,47 @@
+================================================================================
+Research Proposal #9
+================================================================================
+
+Title:
+Regulatory Capital Requirements and Strategic Securities Classification: Evidence from Dodd-Frank's Impact on Banks' HTM-AFS Portfolio Decisions
+
+--------------------------------------------------------------------------------
+
+Original Research Question: How did the enhanced capital and liquidity requirements under Dodd-Frank affect banks' accounting policy choices regarding securities classification and the held-to-maturity versus available-for-sale distinction?
+
+Outcome Variable: HTM_AFS_Reclassification_Ratio
+
+Research Question:
+This study examines how enhanced capital and liquidity requirements under the Dodd-Frank Act influenced banks' strategic accounting policy choices regarding securities classification, specifically the reclassification from available-for-sale (AFS) to held-to-maturity (HTM) categories. The research question is important because it addresses how regulatory changes create incentives for banks to engage in earnings management and regulatory capital optimization through accounting policy choices. We hypothesize that banks increased HTM-AFS reclassifications following Dodd-Frank implementation to avoid mark-to-market volatility in regulatory capital ratios, as HTM securities bypass fair value adjustments through other comprehensive income.
+
+--------------------------------------------------------------------------------
+
+Motivation:
+Understanding banks' strategic responses to regulatory changes through accounting policy choices is crucial for regulators, investors, and auditors assessing financial statement reliability and regulatory effectiveness. This question addresses a fundamental tension between regulatory objectives and managerial incentives, where enhanced capital requirements may inadvertently encourage accounting choices that reduce financial statement transparency (Beatty & Liao, 2014). The findings inform ongoing debates about fair value accounting's role in financial stability and whether regulatory reforms achieve intended objectives without creating unintended consequences through managerial responses (Bhat et al., 2019). Additionally, this research contributes to understanding how banks manage regulatory constraints through discretionary accounting choices, which has implications for audit risk assessment and regulatory oversight effectiveness.
+
+--------------------------------------------------------------------------------
+
+Theoretical Framework and Existing Work:
+Prior literature provides competing theoretical predictions about banks' responses to enhanced capital requirements. Agency theory suggests that managers facing increased regulatory scrutiny will engage in earnings management to smooth reported performance and maintain regulatory capital ratios (Beatty & Liao, 2014). Conversely, increased regulatory oversight under Dodd-Frank may constrain managerial discretion and reduce opportunistic accounting choices. Research on fair value accounting during financial crises shows that banks strategically reclassify securities to manage earnings volatility and regulatory capital (Bhat et al., 2019). However, the specific impact of comprehensive regulatory reform like Dodd-Frank on securities classification choices remains underexplored, particularly regarding the dynamic relationship between enhanced capital requirements and banks' portfolio management strategies through accounting policy selection.
+
+--------------------------------------------------------------------------------
+
+Research Design:
+We employ a difference-in-differences research design using quarterly bank holding company data from 2008-2014, comparing periods before and after Dodd-Frank implementation in July 2010. The regression equation is: HTM_AFS_Reclassification_Ratio = β₀ + β₁Post_DoddFrank + β₂Bank_Size + β₃Tier1_Capital_Ratio + β₄ROA + β₅Loan_Loss_Provisions + β₆Securities_Portfolio_Size + β₇Interest_Rate_Environment + β₈Regulatory_Capital_Pressure + Bank_FE + Quarter_FE + ε. The dependent variable, HTM_AFS_Reclassification_Ratio, measures quarterly securities reclassified from AFS to HTM divided by total investment securities, calculated using Federal Reserve Y-9C regulatory filings from the Chicago Fed's website, specifically Schedule HC-B items 1.b and 2.b for HTM and AFS securities respectively. Post_DoddFrank is an indicator variable equal to one for quarters after July 2010, measured using the regulation's effective date from SEC documentation. Control variables include Bank_Size (natural logarithm of total assets from Y-9C Schedule HC), Tier1_Capital_Ratio (regulatory capital divided by risk-weighted assets from Y-9C Schedule HC-R), ROA (net income divided by average total assets), Loan_Loss_Provisions (quarterly provision expense scaled by total loans), Securities_Portfolio_Size (total investment securities divided by total assets), Interest_Rate_Environment (10-year Treasury yield from FRED), and Regulatory_Capital_Pressure (indicator for banks within 200 basis points of minimum regulatory ratios). We include bank and quarter fixed effects to control for time-invariant bank characteristics and macroeconomic trends, with standard errors clustered at the bank level (Beatty & Liao, 2014). The sample includes all commercial banks with assets exceeding $1 billion to focus on institutions most affected by Dodd-Frank provisions (Bhat et al., 2019).
+
+--------------------------------------------------------------------------------
+
+Contribution:
+This study contributes to the literature by providing the first comprehensive examination of how major financial regulation affects banks' strategic securities classification choices. Unlike prior research focusing on crisis-period responses, we examine systematic regulatory changes' impact on accounting policy choices. The findings inform regulators about unintended consequences of capital requirements on financial reporting transparency and provide insights for auditors regarding areas of heightened risk following regulatory changes. Additionally, this research contributes to understanding the effectiveness of comprehensive financial reform in achieving intended objectives without creating perverse incentives for reduced transparency.
+
+================================================================================
+References
+================================================================================
+
+Beatty, A., & Liao, S. (2014). Financial accounting in the banking industry: A review of the empirical literature. Journal of Accounting and Economics, 58(2-3), 339-383.
+
+Bhat, G., Frankel, R., & Martin, X. (2019). Payout taxes and the allocation of investment. Journal of Accounting Research, 57(1), 51-91.
+
+================================================================================
+Word Count: 647
+================================================================================

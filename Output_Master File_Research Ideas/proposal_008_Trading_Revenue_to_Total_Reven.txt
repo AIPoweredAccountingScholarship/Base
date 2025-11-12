@@ -1,0 +1,57 @@
+================================================================================
+Research Proposal #8
+================================================================================
+
+Title:
+The Impact of Dodd-Frank's Volcker Rule on Banks' Trading Revenue Recognition and Revenue Mix: Evidence from Proprietary Trading Restrictions
+
+--------------------------------------------------------------------------------
+
+Original Research Question: What are the effects of Dodd-Frank's proprietary trading restrictions on banks' revenue recognition practices and the classification of trading versus banking book activities?
+
+Outcome Variable: Trading_Revenue_to_Total_Revenue_Ratio
+
+Research Question:
+This study examines how the Dodd-Frank Act's proprietary trading restrictions, particularly the Volcker Rule, affected banks' revenue recognition practices and the relative importance of trading activities in their revenue composition. We investigate whether banks reduced their trading revenue as a proportion of total operating revenue following the implementation of these restrictions. The research question is important because it addresses fundamental changes in banking business models and revenue structures mandated by post-crisis financial regulation. We hypothesize that banks subject to Volcker Rule restrictions experienced a significant decrease in their trading revenue to total revenue ratio compared to non-affected financial institutions, reflecting both genuine business model changes and potential revenue classification adjustments to comply with regulatory requirements.
+
+--------------------------------------------------------------------------------
+
+Motivation:
+Understanding the effects of Dodd-Frank's proprietary trading restrictions on revenue recognition is crucial for accounting and auditing research because it illuminates how regulatory changes influence financial reporting choices and business model transparency. The classification of trading versus banking book activities directly affects reported earnings volatility, risk disclosures, and stakeholder assessments of bank performance (Beatty & Liao, 2014). Moreover, banks' revenue recognition decisions following regulatory changes provide insights into management's reporting incentives and the effectiveness of regulatory oversight in achieving intended policy outcomes. This research contributes to the growing literature on regulatory effects on financial reporting quality and helps auditors and regulators better understand how compliance with trading restrictions manifests in reported financial results (Bushman & Williams, 2012).
+
+--------------------------------------------------------------------------------
+
+Theoretical Framework and Existing Work:
+Prior literature suggests competing theoretical predictions regarding banks' responses to trading restrictions. Agency theory predicts that banks may engage in creative compliance by reclassifying activities rather than genuinely reducing proprietary trading, potentially maintaining similar revenue patterns through alternative channels (Beatty & Liao, 2014). Conversely, regulatory compliance theory suggests that banks will substantively reduce trading activities to avoid regulatory penalties, leading to genuine decreases in trading revenue ratios. Existing research on bank regulation and financial reporting indicates that banks often adjust their business models and reporting practices in response to regulatory changes, though the magnitude and persistence of these effects vary significantly across institutions (Bushman & Williams, 2012). The literature also suggests that larger, systemically important banks face greater regulatory scrutiny and may exhibit more pronounced changes in revenue composition compared to smaller institutions not subject to Volcker Rule restrictions.
+
+--------------------------------------------------------------------------------
+
+Research Design:
+We employ a difference-in-differences research design to examine the causal effect of Dodd-Frank's proprietary trading restrictions on banks' trading revenue composition. Our regression specification is:
+
+Trading_Revenue_Ratio = β₀ + β₁Post_Dodd_Frank + β₂Treated_Bank + β₃(Post_Dodd_Frank × Treated_Bank) + β₄Bank_Size + β₅Capital_Ratio + β₆ROA + β₇Loan_Loss_Provisions + β₈Market_Volatility + Bank_FE + Quarter_FE + ε
+
+The dependent variable, Trading_Revenue_Ratio, is measured as total trading revenue divided by total operating revenue, calculated quarterly using data from bank regulatory filings (FR Y-9C forms) available through the Federal Reserve Bank of Chicago's website. Trading revenue includes net gains/losses on trading account securities, trading fees, market-making income, and other trading-related revenues as reported in Schedule HI, items 5.a through 5.d. Total operating revenue encompasses net interest income plus total noninterest income from Schedule HI.
+
+The key independent variable, Post_Dodd_Frank, is an indicator variable equal to one for quarters after July 21, 2015 (the Volcker Rule compliance deadline) and zero otherwise, measured using regulatory implementation dates from SEC filings. Treated_Bank identifies banks subject to Volcker Rule restrictions, defined as bank holding companies with consolidated assets exceeding $50 billion as of December 31, 2013, based on FR Y-9C regulatory reports.
+
+Control variables include Bank_Size (natural logarithm of total assets from Schedule HC), Capital_Ratio (Tier 1 capital divided by risk-weighted assets from Schedule HC-R), ROA (net income divided by average total assets), Loan_Loss_Provisions (provision for loan losses scaled by total loans from Schedule HI), and Market_Volatility (quarterly standard deviation of daily VIX index values from CBOE). Data sources include Federal Reserve regulatory filings, Compustat for additional financial statement information, and CBOE for market volatility measures (Beatty & Liao, 2014; Bushman & Williams, 2012).
+
+We include bank fixed effects to control for time-invariant bank characteristics and quarter fixed effects to account for macroeconomic conditions. Standard errors are clustered at the bank level to address within-bank correlation. Our sample period spans 2008-2018, providing sufficient pre- and post-implementation observations to identify treatment effects while avoiding confounding from other major regulatory changes.
+
+--------------------------------------------------------------------------------
+
+Contribution:
+This study contributes to the accounting literature by providing the first comprehensive examination of how major banking regulations affect revenue recognition patterns and business model transparency. Unlike prior research focusing on lending or capital adequacy, we examine trading revenue recognition, offering novel insights into banks' reporting responses to activity-specific regulatory restrictions. Our findings inform regulators about the effectiveness of the Volcker Rule in achieving its intended objectives and provide auditors with empirical evidence about banks' revenue classification practices following regulatory changes. Additionally, this research contributes to the broader literature on regulatory effects on financial reporting by examining a specific, measurable outcome of post-crisis financial reform.
+
+================================================================================
+References
+================================================================================
+
+Beatty, A., & Liao, S. (2014). Financial accounting in the banking industry: A review of the empirical literature. Journal of Accounting and Economics, 58(2-3), 339-383.
+
+Bushman, R. M., & Williams, C. D. (2012). Accounting discretion, loan loss provisioning, and discipline of banks' risk-taking. Journal of Accounting and Economics, 54(1), 1-18.
+
+================================================================================
+Word Count: 645
+================================================================================

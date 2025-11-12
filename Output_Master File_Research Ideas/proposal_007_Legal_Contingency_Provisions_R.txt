@@ -1,0 +1,45 @@
+================================================================================
+Research Proposal #7
+================================================================================
+
+Title:
+The Impact of CFPB Enforcement Actions on Bank Legal Contingency Provisions and Litigation-Related Disclosures
+
+--------------------------------------------------------------------------------
+
+Original Research Question: How did the Consumer Financial Protection Bureau's (CFPB) enforcement actions affect banks' provisions for legal contingencies and litigation-related disclosures?
+
+Outcome Variable: Legal_Contingency_Provisions_Ratio
+
+Research Question:
+This study examines how the Consumer Financial Protection Bureau's (CFPB) enforcement actions, established under the Dodd-Frank Act, affect banks' provisions for legal contingencies and litigation-related disclosures. The research question is important because it addresses how regulatory enforcement mechanisms influence banks' financial reporting practices and risk management strategies. We hypothesize that banks subject to CFPB enforcement actions will exhibit higher legal contingency provisions relative to total assets compared to banks not subject to such actions, reflecting both actual litigation costs and precautionary reserves for potential future regulatory penalties and consumer-related legal claims.
+
+--------------------------------------------------------------------------------
+
+Motivation:
+Understanding the relationship between CFPB enforcement actions and bank legal provisions is crucial for accounting research as it illuminates how regulatory enforcement affects financial reporting quality and transparency. This question addresses fundamental issues in disclosure theory, particularly how external regulatory pressure influences management's disclosure decisions regarding uncertain legal outcomes (Skinner, 1994). The study contributes to our understanding of how post-crisis banking regulations affect financial reporting practices and whether enhanced regulatory oversight improves the informativeness of litigation-related disclosures for stakeholders (Beatty et al., 2013). Furthermore, examining this relationship provides insights into the economic consequences of regulatory enforcement on bank financial reporting behavior.
+
+--------------------------------------------------------------------------------
+
+Theoretical Framework and Existing Work:
+Prior literature suggests competing theoretical predictions regarding regulatory enforcement effects on disclosure practices. Agency theory predicts that regulatory enforcement actions increase disclosure incentives as managers seek to demonstrate compliance and reduce information asymmetry with stakeholders (Healy & Palepu, 2001). Conversely, proprietary cost theory suggests that banks may limit disclosures to avoid revealing sensitive information that could harm competitive position or increase litigation risk. Recent studies examining post-Dodd-Frank regulatory changes provide mixed evidence on disclosure effects, with some finding increased transparency while others document strategic disclosure behavior (Acharya et al., 2016). The literature on litigation reserves suggests that firms increase provisions when facing higher expected legal costs, supporting our prediction that CFPB enforcement actions will positively affect legal contingency provisions (Hennes et al., 2014).
+
+--------------------------------------------------------------------------------
+
+Research Design:
+We employ a difference-in-differences research design using quarterly bank data from 2010-2020. Our regression specification is: Legal_Contingency_Provisions_Ratio = β₀ + β₁CFPB_Enforcement + β₂Bank_Size + β₃ROA + β₄Tier1_Capital_Ratio + β₅NPL_Ratio + β₆Regulatory_Capital_Ratio + β₇Deposit_Growth + Bank_FE + Time_FE + ε. The dependent variable, Legal_Contingency_Provisions_Ratio, is measured as quarterly provisions for legal contingencies and litigation reserves divided by total assets, calculated using Call Report Schedule RI-A item 4.h (provision for credit losses on loans and leases) and Schedule RC-G (other liabilities including litigation reserves), obtained from the Federal Financial Institutions Examination Council database. The independent variable, CFPB_Enforcement, is an indicator variable equal to one for bank-quarters following a CFPB enforcement action against the bank, measured using enforcement action data from the CFPB's public enforcement database. Control variables include Bank_Size (natural logarithm of total assets from Call Report Schedule RC), ROA (net income divided by total assets), Tier1_Capital_Ratio (Tier 1 capital divided by risk-weighted assets from Schedule RC-R), NPL_Ratio (non-performing loans divided by total loans from Schedule RC-N), Regulatory_Capital_Ratio (total regulatory capital divided by risk-weighted assets), and Deposit_Growth (quarterly percentage change in total deposits). We include bank fixed effects to control for time-invariant bank characteristics and time fixed effects to control for macroeconomic trends. Standard errors are clustered at the bank level to account for serial correlation (Petersen, 2009). Data sources include FFIEC Call Reports for financial variables and CFPB enforcement database for regulatory actions (Begley et al., 2017).
+
+--------------------------------------------------------------------------------
+
+Contribution:
+This study makes several important contributions to the accounting and banking literature. First, we provide novel evidence on how post-crisis consumer protection regulations affect bank financial reporting practices, specifically litigation-related disclosures. Second, we contribute to the regulatory disclosure literature by examining the effectiveness of enforcement mechanisms in improving disclosure quality. Third, our findings inform regulators and investors about the economic consequences of CFPB enforcement actions on bank financial reporting behavior and risk management practices.
+
+================================================================================
+References
+================================================================================
+
+['Acharya, V. V., Berger, P., & Roman, R. (2016). Lending implications of U.S. bank stress tests: Costs or benefits? Journal of Financial Intermediation, 34, 58-90.', 'Beatty, A., Liao, S., & Weber, J. (2013). Financial reporting quality, private information, monitoring, and the lease-versus-buy decision. The Accounting Review, 85(4), 1215-1238.', 'Begley, T. A., Purnanandam, A., & Zheng, K. (2017). The strategic under-reporting of bank risk. Review of Financial Studies, 30(10), 3376-3415.', 'Healy, P. M., & Palepu, K. G. (2001). Information asymmetry, corporate disclosure, and the capital markets: A review of the empirical disclosure literature. Journal of Accounting and Economics, 31(1-3), 405-440.', 'Hennes, K. M., Leone, A. J., & Miller, B. P. (2014). Determinants and market consequences of auditor dismissals after accounting restatements. The Accounting Review, 89(3), 1051-1082.', 'Petersen, M. A. (2009). Estimating standard errors in finance panel data sets: Comparing approaches. Review of Financial Studies, 22(1), 435-480.', 'Skinner, D. J. (1994). Why firms voluntarily disclose bad news. Journal of Accounting Research, 32(1), 38-60.']
+
+================================================================================
+Word Count: 647
+================================================================================

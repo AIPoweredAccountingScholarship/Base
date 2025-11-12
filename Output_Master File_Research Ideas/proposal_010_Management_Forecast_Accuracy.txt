@@ -1,0 +1,66 @@
+================================================================================
+Research Proposal #10
+================================================================================
+
+Title:
+Dodd-Frank Enhanced Supervision and the Relationship Between Bank Internal Controls, Management Guidance, and Earnings Predictability
+
+--------------------------------------------------------------------------------
+
+Original Research Question: What is the impact of Dodd-Frank's enhanced supervision on the relationship between bank internal controls, management guidance, and earnings predictability?
+
+Outcome Variable: Management Forecast Accuracy
+
+Research Question:
+This study examines how the Dodd-Frank Act's enhanced supervision requirements affected the relationship between bank internal controls quality, management earnings guidance provision, and earnings predictability. The research question is important because Dodd-Frank fundamentally altered the regulatory landscape for financial institutions, potentially changing management incentives for voluntary disclosure and internal control investments. We hypothesize that enhanced supervision under Dodd-Frank strengthened the positive relationship between internal controls quality and management forecast accuracy, as regulatory scrutiny increased the costs of poor earnings predictability and reduced management's ability to manage earnings through weak controls.
+
+--------------------------------------------------------------------------------
+
+Motivation:
+Understanding how regulatory changes affect management guidance accuracy is crucial for accounting research as it illuminates the interplay between regulation, corporate governance, and information quality (Kanodia & Sapra, 2016). The Dodd-Frank Act represents one of the most significant regulatory interventions in financial markets, making it essential to understand its effects on financial reporting quality and management disclosure behavior. This research addresses a fundamental question about whether enhanced regulatory supervision improves the informativeness of management guidance, which has direct implications for investor protection and market efficiency (Beyer et al., 2010). The findings will inform regulators about the effectiveness of enhanced supervision in improving financial reporting quality.
+
+--------------------------------------------------------------------------------
+
+Theoretical Framework and Existing Work:
+Prior literature suggests competing theoretical predictions about the relationship between regulation and management guidance accuracy. Agency theory suggests that enhanced supervision reduces management's ability to obfuscate poor performance, leading to more accurate guidance (Jensen & Meckling, 1976). However, proprietary cost theory argues that increased regulatory scrutiny may reduce management's willingness to provide detailed guidance to avoid regulatory penalties (Verrecchia, 1983). Recent research on Dodd-Frank's effects on financial institutions provides mixed evidence, with some studies finding improved risk management practices while others document reduced lending and increased compliance costs (Acharya et al., 2018). The literature on internal controls and earnings quality suggests that stronger controls lead to more predictable earnings, but the moderating effect of regulatory supervision remains underexplored.
+
+--------------------------------------------------------------------------------
+
+Research Design:
+We employ a difference-in-differences research design comparing bank holding companies subject to enhanced supervision under Dodd-Frank with non-bank financial institutions serving as a control group. The sample period spans 2008-2014, providing adequate pre- and post-implementation periods.
+
+The regression equation is:
+MGMT_FORECAST_ACCURACY = β₀ + β₁POST_DODD_FRANK + β₂ENHANCED_SUPERVISION + β₃POST_DODD_FRANK × ENHANCED_SUPERVISION + β₄IC_QUALITY + β₅POST_DODD_FRANK × IC_QUALITY × ENHANCED_SUPERVISION + ∑βₖCONTROLS + FIRM_FE + YEAR_FE + ε
+
+The dependent variable, MGMT_FORECAST_ACCURACY, is measured as the negative absolute difference between management's annual earnings per share forecast and actual reported earnings per share, scaled by stock price at the beginning of the fiscal year. Data sources include I/B/E/S management guidance database for earnings forecasts and Compustat for actual earnings. We calculate this measure by first identifying the most recent management forecast issued before earnings announcement, then computing |Actual EPS - Forecasted EPS|/Beginning Stock Price, and multiplying by -1 so higher values indicate greater accuracy.
+
+The key independent variable, ENHANCED_SUPERVISION, is an indicator variable equal to one for bank holding companies with total consolidated assets exceeding $50 billion, making them subject to enhanced prudential standards under Dodd-Frank Section 165. We identify these institutions using Federal Reserve regulatory data and Compustat bank fundamentals.
+
+POST_DODD_FRANK equals one for fiscal years 2011 and after, capturing the post-implementation period. IC_QUALITY is measured using the SOX 404 internal control deficiency disclosures from Audit Analytics, coded as one for firms with no material weaknesses and zero otherwise.
+
+Control variables include firm size (natural logarithm of total assets from Compustat), profitability (ROA from Compustat), leverage (total debt divided by total assets), market-to-book ratio (market value of equity divided by book value from CRSP and Compustat), analyst following (number of analysts providing earnings forecasts from I/B/E/S), and earnings volatility (standard deviation of quarterly earnings over the prior eight quarters). We include firm and year fixed effects to control for unobserved heterogeneity and cluster standard errors at the firm level (Petersen, 2009).
+
+--------------------------------------------------------------------------------
+
+Contribution:
+This study contributes to the literature by providing novel evidence on how financial regulation affects the quality of management guidance through its interaction with internal controls. The research advances our understanding of the real effects of Dodd-Frank beyond traditional risk and lending outcomes, focusing on information quality improvements. The findings will inform ongoing debates about optimal financial regulation design and provide insights for standard-setters considering guidance disclosure requirements. Additionally, the study contributes methodologically by developing a comprehensive framework for measuring regulatory effects on voluntary disclosure quality in the banking sector.
+
+================================================================================
+References
+================================================================================
+
+Acharya, V. V., Berger, P., & Roman, R. A. (2018). Lending implications of U.S. bank stress tests: Costs or benefits? Journal of Financial Intermediation, 34, 58-90.
+
+Beyer, A., Cohen, D. A., Lys, T. Z., & Walther, B. R. (2010). The financial reporting environment: Review of the recent literature. Journal of Accounting and Economics, 50(2-3), 296-343.
+
+Jensen, M. C., & Meckling, W. H. (1976). Theory of the firm: Managerial behavior, agency costs and ownership structure. Journal of Financial Economics, 3(4), 305-360.
+
+Kanodia, C., & Sapra, H. (2016). A real effects perspective to accounting measurement and disclosure: Implications and insights for future research. Journal of Accounting Research, 54(2), 623-676.
+
+Petersen, M. A. (2009). Estimating standard errors in finance panel data sets: Comparing approaches. Review of Financial Studies, 22(1), 435-480.
+
+Verrecchia, R. E. (1983). Discretionary disclosure. Journal of Accounting and Economics, 5, 179-194.
+
+================================================================================
+Word Count: 672
+================================================================================
