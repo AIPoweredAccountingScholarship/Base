@@ -28,4 +28,4 @@ Below is a mapping of research tasks to their corresponding Jupyter files and ou
 | Research ideas                                                      | Y                  |                        | 10_Master File_Research Ideas                                                 | 10_Output_Master File_Research Ideas                                                 |
 
 
-Please cite this work as follows: Ciconte, Rozario, and Urcan (2025). Using AI to identify exogenous shocks and conduct archival accounting research. Working Paper. 
+Please cite this work as follows: Ciconte, Rozario, and Urcan (2025). Using AI to identify exogenous shocks and conduct archival accounting research. Working Paper. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5187205
