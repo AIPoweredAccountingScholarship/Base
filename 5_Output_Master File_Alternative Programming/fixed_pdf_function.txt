@@ -1,0 +1,113 @@
+The error occurs because some rows in your `table_data` don't have the same number of columns as the header row (which has 4 columns). The issue is with the empty separator row and potentially inconsistent row lengths.
+
+Here's the fixed `create_results_table_pdf` function:
+
+```python
+def create_results_table_pdf(all_results, output_path):
+    with PdfPages(output_path) as pdf:
+        for file_name, results in all_results.items():
+            fig, ax = plt.subplots(figsize=(12, 8))
+            ax.axis('tight')
+            ax.axis('off')
+            
+            # Create table data
+            table_data = []
+            headers = ['Variable', 'Spec 1: Baseline', 'Spec 2: Controls', 'Spec 3: Fixed Effects']
+            table_data.append(headers)
+            
+            # Get all variables across specifications
+            all_vars = set()
+            for spec_name in ['spec1_baseline', 'spec2_controls', 'spec3_fixed_effects']:
+                if spec_name in results and 'coefficients' in results[spec_name]:
+                    all_vars.update(results[spec_name]['coefficients'].keys())
+            
+            # Add coefficient and t-stat rows for each variable
+            for var in sorted(all_vars):
+                if var == 'Intercept':
+                    continue
+                    
+                coef_row = [var]
+                tstat_row = ['']
+                
+                for spec_name in ['spec1_baseline', 'spec2_controls', 'spec3_fixed_effects']:
+                    if (spec_name in results and 
+                        'coefficients' in results[spec_name] and 
+                        var in results[spec_name]['coefficients']):
+                        
+                        coef = results[spec_name]['coefficients'][var]
+                        tstat = results[spec_name]['t_stats'][var]
+                        pval = results[spec_name]['p_values'][var]
+                        
+                        # Add significance stars
+                        stars = ''
+                        if pval < 0.01:
+                            stars = '***'
+                        elif pval < 0.05:
+                            stars = '**'
+                        elif pval < 0.10:
+                            stars = '*'
+                        
+                        coef_row.append(f'{coef:.4f}{stars}')
+                        tstat_row.append(f'({tstat:.2f})')
+                    else:
+                        coef_row.append('')
+                        tstat_row.append('')
+                
+                table_data.append(coef_row)
+                table_data.append(tstat_row)
+            
+            # Add summary statistics with proper column count
+            # Add empty separator row with correct number of columns
+            table_data.append(['', '', '', ''])  # Fixed: now has 4 columns
+            
+            obs_row = ['Observations']
+            r2_row = ['R-squared']
+            
+            for spec_name in ['spec1_baseline', 'spec2_controls', 'spec3_fixed_effects']:
+                if spec_name in results and 'n_obs' in results[spec_name]:
+                    obs_row.append(str(results[spec_name]['n_obs']))
+                    r2_row.append(f"{results[spec_name]['r_squared']:.4f}")
+                else:
+                    obs_row.append('')
+                    r2_row.append('')
+            
+            table_data.append(obs_row)
+            table_data.append(r2_row)
+            
+            # Debug: Check all rows have same length
+            expected_cols = len(headers)
+            for i, row in enumerate(table_data):
+                if len(row) != expected_cols:
+                    print(f"Row {i} has {len(row)} columns, expected {expected_cols}: {row}")
+                    # Pad or trim row to correct length
+                    while len(row) < expected_cols:
+                        row.append('')
+                    if len(row) > expected_cols:
+                        row = row[:expected_cols]
+                        table_data[i] = row
+            
+            # Create table
+            table = ax.table(cellText=table_data, cellLoc='center', loc='center')
+            table.auto_set_font_size(False)
+            table.set_fontsize(8)
+            table.scale(1.2, 1.5)
+            
+            # Style the table
+            for i in range(len(headers)):
+                table[(0, i)].set_facecolor('#40466e')
+                table[(0, i)].set_text_props(weight='bold', color='white')
+            
+            plt.title(f'Regression Results: {file_name}', fontsize=14, fontweight='bold', pad=20)
+            pdf.savefig(fig, bbox_inches='tight')
+            plt.close()
+```
+
+The key changes made:
+
+1. **Fixed the empty separator row**: Changed `table_data.append([''])` to `table_data.append(['', '', '', ''])` to match the 4-column structure.
+
+2. **Added debugging and row validation**: Added a loop that checks each row has the correct number of columns and fixes any inconsistencies by padding with empty strings or trimming excess columns.
+
+3. **Ensured consistent column counts**: The validation loop ensures every row has exactly 4 columns before creating the table.
+
+The main issue was that the separator row only had 1 column (`['']`) while the table expected 4 columns to match the header row. The debugging section will catch any other similar issues and automatically fix them.

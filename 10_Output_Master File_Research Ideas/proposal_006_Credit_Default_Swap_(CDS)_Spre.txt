@@ -1,0 +1,57 @@
+================================================================================
+Research Proposal #6
+================================================================================
+
+Title:
+Dodd-Frank's Systemic Risk Oversight and Market Perceptions of Government Implicit Guarantees: Evidence from Bank Credit Default Swap Spreads
+
+--------------------------------------------------------------------------------
+
+Original Research Question: What is the impact of Dodd-Frank's systemic risk oversight on the market's perception of government implicit guarantees and how is this reflected in banks' funding costs and financial reporting?
+
+Outcome Variable: Credit Default Swap (CDS) Spreads
+
+Research Question:
+We examine how Dodd-Frank's systemic risk oversight framework affects market perceptions of government implicit guarantees for systemically important financial institutions and how these perceptions manifest in banks' funding costs as measured by credit default swap spreads. The implementation of enhanced regulatory oversight under Dodd-Frank creates competing effects: increased regulatory burden may elevate default risk, while systemic importance designation may strengthen implicit government backing. We hypothesize that systemically important banks experience relatively lower CDS spreads post-Dodd-Frank compared to non-systemically important banks, reflecting market expectations of government support despite increased regulatory costs.
+
+--------------------------------------------------------------------------------
+
+Motivation:
+Understanding the market's perception of implicit government guarantees is crucial for accounting and auditing research as it directly affects financial reporting quality, risk disclosure practices, and audit risk assessment. The Dodd-Frank Act's systemic risk framework fundamentally altered the regulatory landscape, creating new disclosure requirements and corporate governance mechanisms that auditors must evaluate (Beatty et al., 2013). Market perceptions of government backing influence banks' funding costs, which affects their financial performance metrics and the reliability of financial statements used by investors and regulators (Dechow et al., 2010). This research addresses a critical gap in understanding how regulatory reforms designed to reduce systemic risk paradoxically may reinforce market expectations of government support, with significant implications for audit risk assessment and financial reporting transparency.
+
+--------------------------------------------------------------------------------
+
+Theoretical Framework and Existing Work:
+Prior literature provides competing theoretical predictions regarding the impact of systemic risk oversight on funding costs. The moral hazard theory suggests that regulatory designation as systemically important may actually reduce funding costs by signaling implicit government backing, creating perverse incentives for risk-taking behavior. Conversely, regulatory burden theory predicts that enhanced oversight increases compliance costs and operational constraints, leading to higher funding costs. Existing empirical evidence shows mixed results, with some studies finding that too-big-to-fail designations reduce funding costs while others document increased costs from regulatory compliance (Acharya et al., 2016). The accounting literature emphasizes how regulatory changes affect disclosure quality and information asymmetry between banks and market participants (Bushman & Williams, 2012). Our study builds on this foundation by examining how Dodd-Frank's specific provisions regarding systemic risk oversight influence market-based measures of credit risk.
+
+--------------------------------------------------------------------------------
+
+Research Design:
+We employ a difference-in-differences research design to examine the causal impact of Dodd-Frank's systemic risk oversight on bank CDS spreads. Our regression specification is:
+
+CDS_Spread = β₀ + β₁(Post_Dodd_Frank × SIFI_Designation) + β₂Post_Dodd_Frank + β₃SIFI_Designation + β₄Bank_Size + β₅Capital_Ratio + β₆ROA + β₇Loan_Loss_Provisions + β₈Market_to_Book + Bank_FE + Time_FE + ε
+
+The dependent variable, CDS_Spread, represents the natural logarithm of the 5-year senior credit default swap spread measured in basis points, obtained from Markit and Bloomberg databases. We calculate this as the daily closing mid-price of the CDS contract, averaged monthly to reduce noise. The primary independent variable, Post_Dodd_Frank × SIFI_Designation, is an interaction term where Post_Dodd_Frank equals one for periods after July 2010, and SIFI_Designation equals one for banks designated as systemically important financial institutions under Dodd-Frank criteria (assets exceeding $50 billion). We obtain bank designation data from Federal Reserve regulatory filings and Fed stress test participant lists. Control variables include Bank_Size (natural logarithm of total assets from Compustat), Capital_Ratio (Tier 1 capital divided by risk-weighted assets from regulatory filings), ROA (net income divided by total assets from Compustat), Loan_Loss_Provisions (provision for loan losses scaled by total loans from Compustat), and Market_to_Book (market value of equity divided by book value from CRSP and Compustat). We include bank fixed effects to control for time-invariant bank characteristics and time fixed effects to account for macroeconomic conditions. Standard errors are clustered at the bank level to account for serial correlation. Our sample spans 2008-2015, encompassing pre- and post-Dodd-Frank periods, using data from publicly traded U.S. commercial banks with available CDS quotes (Kashyap et al., 2010).
+
+--------------------------------------------------------------------------------
+
+Contribution:
+This study contributes to the accounting and auditing literature by providing novel evidence on how major financial regulation affects market-based risk measures that are increasingly important for financial reporting and audit risk assessment. We extend existing research by examining the unintended consequences of systemic risk regulation on market perceptions of government support. Our findings inform auditors about the reliability of market-based risk indicators in the post-Dodd-Frank era and provide insights for regulators regarding the effectiveness of systemic risk oversight in achieving its intended goals of reducing moral hazard and systemic risk.
+
+================================================================================
+References
+================================================================================
+
+Acharya, V., Anginer, D., & Warburton, A. J. (2016). The end of market discipline? Investor expectations of implicit government guarantees. Journal of Financial Economics, 120(1), 191-209.
+
+Beatty, A., Liao, S., & Yu, J. J. (2013). The spillover effect of fraudulent financial reporting on peer firms' investment efficiency. Journal of Accounting and Economics, 55(2-3), 183-205.
+
+Bushman, R. M., & Williams, C. D. (2012). Accounting discretion, loan loss provisioning, and discipline of banks' risk-taking. Journal of Accounting and Economics, 54(1), 1-18.
+
+Dechow, P., Ge, W., & Schrand, C. (2010). Understanding earnings quality: A review of the proxies, their determinants and their consequences. Journal of Accounting and Economics, 50(2-3), 344-401.
+
+Kashyap, A. K., Stein, J. C., & Hanson, S. (2010). An analysis of the impact of 'substantially heightened' capital requirements on large financial institutions. Booth School of Business, University of Chicago, Working Paper.
+
+================================================================================
+Word Count: 687
+================================================================================

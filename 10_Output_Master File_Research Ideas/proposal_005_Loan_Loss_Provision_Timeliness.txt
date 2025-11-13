@@ -1,0 +1,56 @@
+================================================================================
+Research Proposal #5
+================================================================================
+
+Title:
+Stress Testing Requirements and the Timeliness of Banks' Credit Loss Recognition: Evidence from the Dodd-Frank Act
+
+--------------------------------------------------------------------------------
+
+Original Research Question: How did the implementation of stress testing requirements affect banks' loan loss provisioning practices and the timeliness of credit loss recognition?
+
+Outcome Variable: Loan Loss Provision Timeliness (LLPT)
+
+Research Question:
+This study examines how the implementation of stress testing requirements under the Dodd-Frank Act affected banks' loan loss provisioning practices and the timeliness of credit loss recognition. The stress testing requirements mandate banks to conduct forward-looking assessments of their loan portfolios under adverse economic scenarios, potentially incentivizing more timely recognition of expected credit losses. We hypothesize that banks subject to stress testing requirements exhibit improved loan loss provision timeliness following Dodd-Frank implementation, as these requirements enhance banks' focus on forward-looking credit risk assessment and reduce incentives for delayed loss recognition that could be exposed during regulatory stress tests.
+
+--------------------------------------------------------------------------------
+
+Motivation:
+Understanding the impact of stress testing on loan loss provisioning timeliness is crucial for accounting research as it addresses fundamental questions about regulatory influence on financial reporting quality and earnings management practices in the banking sector. Timely credit loss recognition is essential for providing investors and stakeholders with accurate information about banks' financial health and future cash flows (Beatty & Liao, 2011). The delayed recognition of credit losses was a significant contributor to the 2008 financial crisis, highlighting the importance of regulatory mechanisms that promote timely loss recognition (Bushman & Williams, 2012). This research contributes to our understanding of how specific regulatory interventions can improve the informativeness of financial reporting in systemically important financial institutions.
+
+--------------------------------------------------------------------------------
+
+Theoretical Framework and Existing Work:
+Prior literature provides mixed evidence on regulatory effects on bank provisioning practices. Some studies suggest that regulatory pressure can improve the timeliness of loss recognition by reducing managerial discretion in provisioning decisions (Bushman & Williams, 2012). However, other research indicates that banks may engage in earnings smoothing through loan loss provisions, particularly during periods of regulatory scrutiny (Beatty & Liao, 2011). The stress testing framework creates unique incentives for forward-looking provisioning because banks must demonstrate their ability to maintain adequate capital under adverse scenarios. This regulatory mechanism differs from traditional backward-looking supervisory approaches and theoretically should encourage more timely recognition of expected losses to avoid regulatory intervention during stress test evaluations.
+
+--------------------------------------------------------------------------------
+
+Research Design:
+We employ a difference-in-differences research design to examine the causal effect of stress testing requirements on loan loss provision timeliness. Our sample includes all publicly traded U.S. commercial banks from Compustat Bank database covering the period 2008-2015, providing sufficient pre- and post-implementation observations around the 2010 Dodd-Frank Act.
+
+The regression equation is:
+LLPT = β₀ + β₁StressTested × Post + β₂StressTested + β₃Post + β₄Size + β₅Capital + β₆ROA + β₇NPL + β₈GDP_Growth + Bank FE + Year FE + ε
+
+The dependent variable, Loan Loss Provision Timeliness (LLPT), is measured as the negative of the coefficient from regressing current loan loss provisions on future net charge-offs. Specifically, we estimate rolling four-quarter regressions of current period loan loss provisions (Compustat item PCLC) on one- to four-period ahead net charge-offs (Compustat item COQC minus COQR), using the R-squared from these regressions as our timeliness measure. Higher values indicate more forward-looking provisioning practices.
+
+The key independent variable, StressTested, is an indicator variable equal to one for banks with total consolidated assets exceeding $50 billion as of December 31, 2009 (based on Compustat item AT), identifying banks subject to mandatory stress testing under Dodd-Frank. Post is an indicator variable equal to one for years 2011-2015, capturing the post-implementation period.
+
+Control variables include bank Size (natural logarithm of total assets from Compustat item AT), Capital ratio (tier 1 capital ratio from Compustat item CAPR1), ROA (return on assets calculated as net income divided by average total assets), NPL (non-performing loans ratio from Compustat item NPATQ divided by total loans), and GDP_Growth (annual GDP growth rate from Federal Reserve Economic Data). We include bank fixed effects to control for time-invariant bank characteristics and year fixed effects to control for macroeconomic trends. Standard errors are clustered at the bank level to account for serial correlation (Beatty & Liao, 2011). Data sources include Compustat Bank database for financial statement variables and Federal Reserve regulatory filings for stress testing identification.
+
+--------------------------------------------------------------------------------
+
+Contribution:
+This study contributes to the accounting literature by providing the first comprehensive examination of how stress testing requirements affect the timeliness of credit loss recognition in banks. Our research extends prior work on regulatory effects on bank provisioning by focusing on forward-looking regulatory mechanisms rather than traditional backward-looking supervision. The findings inform ongoing debates about the effectiveness of post-crisis banking regulations and provide insights for standard setters implementing current expected credit loss models. Additionally, this research contributes to the earnings management literature by examining how specific regulatory interventions can constrain managerial discretion in financial reporting.
+
+================================================================================
+References
+================================================================================
+
+Beatty, A., & Liao, S. (2011). Do delays in expected loss recognition affect banks' willingness to lend? Journal of Accounting and Economics, 52(1), 1-20.
+
+Bushman, R. M., & Williams, C. D. (2012). Accounting discretion, loan loss provisioning, and discipline of banks' risk-taking. Journal of Accounting and Economics, 54(1), 1-18.
+
+================================================================================
+Word Count: 647
+================================================================================
