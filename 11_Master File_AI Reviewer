@@ -1,0 +1,515 @@
+#%% md
+# This script will evaluate research papers in *Using AI
+# to Identify Exogenous Shocks and Conduct Archival
+# Accounting Research using Claude for both U.S. and non-U.S. laws
+
+#%%
+import pandas as pd, numpy as np
+#%% md
+# Set up function to parse PDF files
+#%%
+import PyPDF2, re
+
+def parse_pdf(pdf_path):
+    # Open the PDF file in binary read mode
+    pdf_file = open(pdf_path, 'rb')
+    pdf_reader = PyPDF2.PdfReader(pdf_file)  # Updated to use PdfReader
+    
+    num_pages = len(pdf_reader.pages)  # Adapted for the new class
+    
+    text = ""
+    
+    # Iterate over pages to extract text
+    for page in pdf_reader.pages:
+        text += page.extract_text()  # Updated method name extract_text()
+    
+    pdf_file.close()  # Ensure the file is closed after processing
+    
+    # Capture Title
+    # use regex that starts at the beginning of text and ends at first new line
+    r = re.search(r'(^.*?)(Artemis Intelligencia)', text, re.DOTALL)
+    
+    if r:
+        title = r.group(1).strip()
+    else:
+        title = ""
+    
+    # Capture Abstract
+    r = re.search(r'(^abstract)(.+?)(^introduction)', text, re.DOTALL|re.I|re.M)
+    
+    if r:
+        abstract = r.group(2).strip()
+    else:
+        abstract = ""
+    
+    # Capture body of paper using regex that looks for
+    # the first line of text after the abstract and before the introduction
+    r = re.search(r'(^introduction.+)', text, re.DOTALL|re.I|re.M)
+    
+    if r:
+        body = r.group(1).strip()
+    else:
+        body = text
+    
+    return {'title':title,
+            'abstract':abstract,
+            'body':body}
+
+#%% md
+# Build list of references - PROCESS ALL FILES
+#%%
+import os
+
+# Update these paths to match your directory structure
+usmanuscripts = r"enter folder path here"
+intmanuscripts = r"enter folder path here"
+
+# Check if directories exist before proceeding
+if not os.path.exists(usmanuscripts):
+    print(f"Warning: Directory '{usmanuscripts}' not found!")
+    print("Please update the usmanuscripts variable with the correct path")
+    
+if not os.path.exists(intmanuscripts):
+    print(f"Warning: Directory '{intmanuscripts}' not found!")
+    print("Please update the intmanuscripts variable with the correct path")
+
+# Only proceed if at least one directory exists
+existing_dirs = []
+if os.path.exists(usmanuscripts):
+    existing_dirs.append(('us', usmanuscripts))
+if os.path.exists(intmanuscripts):
+    existing_dirs.append(('intl', intmanuscripts))
+
+if not existing_dirs:
+    print("Error: No manuscript directories found! Please check your paths.")
+    print("Current working directory:", os.getcwd())
+    print("Available files/folders:", os.listdir('.'))
+else:
+    print(f"Found {len(existing_dirs)} manuscript directories")
+
+# PROCESS ALL FILES - NO LIMIT
+usfiles = []
+infiles = []
+
+if os.path.exists(usmanuscripts):
+    all_usfiles = [f for f in os.listdir(usmanuscripts) if f.endswith('pdf')]
+    usfiles = all_usfiles  # Take ALL files
+    print(f"Found {len(all_usfiles)} US PDF files - processing ALL")
+    
+if os.path.exists(intmanuscripts):
+    all_infiles = [f for f in os.listdir(intmanuscripts) if f.endswith('pdf')]
+    infiles = all_infiles  # Take ALL files
+    print(f"Found {len(all_infiles)} international PDF files - processing ALL")
+
+print(f"Total files to process: {len(usfiles) + len(infiles)}")
+
+#%%
+papers = []
+print("Processing US manuscripts...")
+for i,f in enumerate(usfiles):
+    print(f"Processing US file {i+1}/{len(usfiles)}: {f}")
+    try:
+        rec = parse_pdf(f"{usmanuscripts}/{f}")
+        rec['unique_id'] = i
+        rec['type'] = 'USA'
+        rec['file'] = f
+        papers.append(rec)
+    except Exception as e:
+        print(f"Error processing US file {f}: {e}")
+
+print("Processing international manuscripts...")
+for j,f in enumerate(infiles):
+    print(f"Processing INTL file {j+1}/{len(infiles)}: {f}")
+    try:
+        rec = parse_pdf(f"{intmanuscripts}/{f}")
+        rec['unique_id'] = len(usfiles) + j  # ensures unique id across two types
+        rec['type'] = 'INTL'
+        rec['file'] = f
+        papers.append(rec)
+    except Exception as e:
+        print(f"Error processing INTL file {f}: {e}")
+
+allman = pd.DataFrame(papers)
+print(f"Successfully processed {len(allman)} manuscripts total")
+
+#%%
+# Save allman - CONSISTENT FILENAME
+allman.to_pickle("manuscripts_all.pkl")
+print("Saved all manuscripts to manuscripts_all.pkl")
+
+#%% md
+# Set up Claude API client
+#%%
+import anthropic
+
+# Replace with your Claude API key
+api_key = 'enter API keyhere
+client = anthropic.Anthropic(api_key=api_key)
+
+model = "claude-sonnet-4-20250514"  
+
+#%% md
+# Set up prompts
+#%%
+system_prompt = """
+You are an accounting academic refereeing for a top accounting journal. Your job is to help improve research papers.
+
+You are evaluating the first draft of a research paper that will eventually be submitted to a top accounting journal. 
+
+Use the full 1-5 scale where 3 means "meets basic standards for further development." Think step-by-step internally, but only output the final JSON requested. 
+Do NOT invent information that is not in the paper.
+
+IMPORTANT: Accept and Minor Revision together should be very rare (about 10-15%). Note some papers (about 10-15%) do meet
+publication criteria and should receive scores of 3 or higher.
+
+IMPORTANT: You must output ONLY valid JSON. Do not include any explanatory text, reasoning, markdown formatting, 
+or any other content. Start with { and end with } Your entire response must be parseable JSON.
+"""
+
+user_prompt = """
+You will evaluate a research paper on managers' voluntary disclosure responses to exogenous shocks.
+Return one JSON object with the exact keys and value types shown below— no extra text, no markdown fences.
+
+At top journals, only about 10-15% of papers are accepted. Use the full 1-to-5 scale as follows:
+
+Score 1 (Very Poor): Serious fatal flaws, claims unsupported, adds nothing new.
+Score 2 (Poor): Important weaknesses, some merit but unlikely salvageable.
+Score 3 (Adequate): Meets basic standards, average contribution, routine methods.
+Score 4 (Good): Solid paper with noticeable strengths and minor weaknesses.
+Score 5 (Excellent): Field-advancing, novel, rigorous, and highly impactful.
+
+**"Score 3 represents work that meets publication standards. Scores of 4-5 are for stronger contributions."**
+
+Criteria:
+
+- **Contribution:** What is your assessment of the potential contribution of the study? A study making a significant
+contribution is one that explores an unanswered question, exploits new data, or challenges priors.
+
+Low contribution examples: 
+Example 1: incremental, derivative, or duplicative work.
+Example 2: revisits a well-trodden topic with slightly newer data. 
+
+
+
+- **Theoretical Framework:** A sound theoretical framework is one that is well-grounded in established theories, 
+logically structured, and provides a strong foundation for the study's hypotheses or research questions.
+
+Poor theoretical framework examples: 
+Example 1: theory section reads like a literature review without logical development toward testable predictions.
+Example 2: hypotheses lack clear theoretical derivation.
+
+
+
+- **Empirical Execution:** A rigorous empirical execution means that the study obtains the necessary data,
+applies appropriate methodologies, and produces reliable and interpretable results.
+
+Poor empirical execution examples: 
+Example 1: design is fatally flawed, or key threats to inference are ignored.
+Example 2: uses standard methods but has clear identification or measurement concerns, 
+or only superficial discussion of limitations. 
+
+
+
+- **Plausibility:** A plausible study will identify relevant and valid regulations to exploit.
+
+Low plausibility examples: 
+Example 1: predictions are not credible or lack a plausible channel.
+Example 2: theory is vague or channel is indirect or speculative. 
+
+
+
+- **Writing Quality:** What is your assessment of the writing quality of this study? A well-written study will 
+have a logical order, clearly communicate its findings, and be internally consistent.
+
+Poor writing examples:
+Example 1: inconsistent terminology or contradictory statements throughout the paper.
+Example 2: abstract and introduction that misrepresent the actual study conducted or conclusions that don't 
+clearly follow from the presented evidence.
+
+
+
+Recommendation: One of Accept | Minor Revision | Major Revision | Reject. 
+
+Output schema (no extra keys, numbers as integers):
+
+{
+    "unique_id": "<string>",
+    
+    "contribution": <int 1-5>,
+    
+    "brief_reason_contribution": "<3-5 concise sentences justifying your assessment for the contribution. 
+    If you selected a 1 or 2, please provide examples of related literature that limits the contribution 
+    of the current study.>", 
+    
+    "theoretical_framework": <int 1-5>,
+    
+    "brief_reason_theoretical_framework": "<3-5 concise sentences justifying your assessment for the theoretical
+    framework.  If you selected 1 or 2, please specify which aspects of the theoretical framework you find lacking in soundness.>", 
+  
+    "empirical_execution": <int 1-5>,
+  
+    "brief_reason_empirical_execution": "<3-5 concise sentences justifying your assessment for the empirical execution.
+    If you selected 1 or 2, please specify which aspects of the proposed empirical execution are not rigorous.>", 
+    
+    "plausibility": <int 1-5>,
+    
+    "brief_reason_plausibility": "<3-5 concise sentences justifying your score for plausibility.>",
+    
+    "writing_quality": <int 1-5>,
+    
+    "brief_reason_writing_quality": "<3-5 concise sentences justifying your score for writing quality. 
+    If you selected 1 or 2, please specify why you believe this study has low writing quality.>",
+    
+    "recommendation": "<one of four strings>",
+    "brief_reason_recommendation": "<3-5 concise sentences justifying the recommendation>"
+}
+
+I will pass the paper as a JSON object with fields: unique_id, title, abstract, body.
+
+Here is your paper: JSONPAPER
+"""
+
+
+
+#%% md
+# Set up call to Claude API
+#%%
+import json
+import time
+import pickle
+
+# Check if we have existing results to avoid re-running API calls
+results_file = "results_claude_all.pkl"
+if os.path.exists(results_file):
+    print(f"Found existing {results_file} - loading previous results...")
+    with open(results_file,"rb") as f:
+        results = pickle.load(f)
+    print(f"Loaded {len(results)} existing results")
+else:
+    results = []
+
+print(f"Need to process {len(allman) - len(results)} more papers")
+if len(allman) - len(results) > 0:
+    print(f"Estimated time: {(len(allman) - len(results)) * 3 / 60:.1f} minutes")
+
+#%%
+# Process all remaining papers
+for i in range(len(allman)):
+    if i < len(results): 
+        continue  # skips ones that have been processed
+    
+    paper = allman[['unique_id','title','abstract','body']].iloc[i].to_json()
+    
+    print(f"Processing paper {i+1}/{len(allman)} - API call in progress...")
+    
+    try:
+        message = client.messages.create(
+            model=model,
+            max_tokens=8000,
+            temperature=0.5,
+            system=system_prompt,
+            messages=[
+                {
+                    "role": "user",
+                    "content": user_prompt.replace("JSONPAPER", paper)
+                }
+            ]
+        )
+        
+        # POST-PROCESSING CODE FOR MIXED OUTPUT (JSON and not JSON) HERE:
+        response_text = message.content[0].text.strip()
+    
+        # Try to extract JSON from mixed responses
+        import re
+        json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
+        if json_match:
+            response_text = json_match.group()
+            print(f"✓ Extracted JSON from mixed response for paper {i+1}")
+    
+        # Test if it's valid JSON before saving
+        try:
+            json.loads(response_text)
+            results.append(response_text)
+            print(f"✓ Successfully processed paper {i+1}")
+        except json.JSONDecodeError:
+            # If still not valid JSON, save the original response
+            results.append(message.content[0].text)
+            print(f" Saved original response for paper {i+1} (still not valid JSON)")
+    
+        # Save progress after each successful call
+        with open(results_file,"wb") as f:
+            pickle.dump(results, f)
+    
+        # Add a small delay to respect rate limits
+        time.sleep(2)
+        
+    except Exception as e:
+        print(f" Error processing paper {i+1}: {e}")
+        results.append(f"ERROR: {e}")
+        
+        # Save progress even with errors
+        with open(results_file,"wb") as f:
+            pickle.dump(results, f)
+        
+        # Wait longer if API rate limit error
+        if "rate" in str(e).lower():
+            print("Rate limit detected - waiting 60 seconds...")
+            time.sleep(60)
+
+print(f"Completed! Processed {len(results)} total papers")
+
+
+#%%
+# Final save
+with open(results_file,"wb") as f:
+    pickle.dump(results, f)
+
+#%% md
+# Analyze Results
+#%%
+import pandas as pd, pickle, json
+
+with open(results_file,"rb") as g:
+    results2 = pickle.load(g)
+
+#%%
+# Build list of dictionaries
+good_records = []
+bad_records = []
+
+for i, r in enumerate(results2):
+    if isinstance(r, str) and not r.startswith("ERROR"):
+        try:
+            # Handle potential markdown code blocks
+            clean_r = r.strip()
+            if clean_r.startswith('```json'):
+                clean_r = clean_r[7:]  # Remove ```json
+            if clean_r.endswith('```'):
+                clean_r = clean_r[:-3]  # Remove ```
+            
+            pr = json.loads(clean_r)
+            pr['i'] = i
+            good_records.append(pr)
+        except json.JSONDecodeError as e:
+            print(f"JSON decode error for record {i}: {e}")
+            print(f"Raw response: {r[:200]}...")
+            bad_records.append(r)
+    else:
+        bad_records.append(r)
+
+print(f"There are {len(good_records)} good records.")
+print(f"There are {len(bad_records)} bad records.")
+
+#%%
+if good_records:
+    mandf = pd.DataFrame.from_records(good_records)
+    
+    # DEBUG: Show what columns we actually have
+    print("Columns in mandf:", list(mandf.columns))
+    print("Sample record keys:", list(good_records[0].keys()) if good_records else "None")
+    
+    # Check alignment
+    alignment_check = mandf[mandf['unique_id'].astype(int) != mandf['i']]
+    if len(alignment_check) > 0:
+        print("Warning: Some records are not aligned!")
+        print(alignment_check)
+    else:
+        print("All records are properly aligned.")
+else:
+    print("No good records found!")
+
+#%%
+# FIXED: Use consistent filename - load from the file we just saved
+allman = pd.read_pickle("manuscripts_all.pkl")
+
+#%%
+if 'mandf' in locals() and len(mandf) > 0:
+    both = pd.concat([mandf, allman[["type", "file"]].iloc[:len(mandf)]], axis=1)
+    print(f"Successfully merged data - {len(both)} papers total")
+    print(both.head())
+    
+    # Summary statistics
+    print(f"\nSummary by type:")
+    print(both['type'].value_counts())
+    print(f"\nMean scores:")
+    print(f"Contribution: {both['contribution'].mean():.2f}")
+    print(f"Theoretical Framework: {both['theoretical_framework'].mean():.2f}")
+    print(f"Empirical Execution: {both['empirical_execution'].mean():.2f}")
+    print(f"Plausibility: {both['plausibility'].mean():.2f}")
+    print(f"Writing Quality: {both['writing_quality'].mean():.2f}")
+else:
+    print("No data to merge - check for errors in API calls")
+
+#%% md
+# Save results
+#%%
+if 'both' in locals():
+    # Define the exact column order you want
+    column_order = [
+        'unique_id', 
+        'contribution', 
+        'brief_reason_contribution', 
+        'theoretical_framework', 
+        'brief_reason_theoretical_framework', 
+        'empirical_execution', 
+        'brief_reason_empirical_execution', 
+        'plausibility', 
+        'brief_reason_plausibility', 
+        'writing_quality', 
+        'brief_reason_writing_quality', 
+        'recommendation', 
+        'brief_reason_recommendation', 
+        'type', 
+        'file'
+    ]
+    
+    # Save with specified column order
+    both[column_order].to_excel("AI_Reviewer_results_all_papers.xlsx", index=False)
+    both[column_order].to_csv("AI_Reviewer_results_all_papers.csv", index=False)
+    print("Results saved to AI_Reviewer_results_all_papers.xlsx and .csv")
+
+#%% md
+# Plot ratings & recommendations
+#%%
+if 'both' in locals() and len(both) > 0:
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+    
+    ratings = ['contribution', 'theoretical_framework', 'empirical_execution', 'plausibility', 'writing_quality']
+    
+    # Distribution by type
+    fig, axes = plt.subplots(1, 5, figsize=(25, 5))
+    for i, rating in enumerate(ratings):
+        both.groupby('type')[rating].hist(alpha=0.7, bins=5, ax=axes[i], legend=True)
+        axes[i].set_title(f'{rating.replace("_", " ").title()} by Type')
+        axes[i].set_xlabel('Score')
+        axes[i].set_ylabel('Count')
+    
+    plt.tight_layout()
+    plt.show()
+    
+    # Mean ratings by type
+    df_long = both.melt(id_vars='type', value_vars=ratings,
+                       var_name='Attribute', value_name='Rating')
+    
+    plt.figure(figsize=(12, 6))
+    ax = sns.barplot(data=df_long, x='Attribute', y='Rating', hue='type', palette='muted')
+    ax.set_title('Mean Ratings by Attribute and Type')
+    ax.set_ylabel('Mean Rating')
+    # Clean up x-axis labels
+    ax.set_xticklabels([label.get_text().replace('_', ' ').title() for label in ax.get_xticklabels()])
+    plt.legend(title='Type')
+    plt.tight_layout()
+    plt.show()
+    
+    # Recommendations by type
+    recommendation_counts = both.groupby('type')['recommendation'].value_counts(normalize=True).unstack(fill_value=0)
+    recommendation_counts.plot(kind='bar', stacked=True, figsize=(8, 6))
+    plt.title('Recommendation Distribution by Type')
+    plt.ylabel('Proportion')
+    plt.legend(title='Recommendation', bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.tight_layout()
+    plt.show()
+    
+else:
+    print("No data available for plotting")
