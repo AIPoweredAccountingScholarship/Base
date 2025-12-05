@@ -26,6 +26,7 @@ Below is a mapping of research tasks to their corresponding Jupyter files and ou
 | State-level collection of shocks                                    | Y                  |                        | 9_Master File_State-Level Securities Laws                                    | 9_Output_Master File_State-Level Securities Laws                                    |
 | Generate state-level papers                                         | Y                  |                        | 9_Master File_State-Level Securities Laws                                    | 9_Output_Master File_State-Level Securities Laws                                    |
 | Research ideas                                                      | Y                  |                        | 10_Master File_Research Ideas                                                 | 10_Output_Master File_Research Ideas                                                 |
+|Review AI-generated paper                                            |Y                   | Y                      | 11_Master File_AI Reviewer                                                    |11_Output_Master File_AI Reviewer    
 
 
 Please cite this work as follows: Ciconte, Rozario, and Urcan (2025). Using AI to identify exogenous shocks and conduct archival accounting research. Working Paper. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5187205
